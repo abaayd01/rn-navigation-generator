@@ -1,36 +1,22 @@
 (ns rn-navigation-generator.core
   (:gen-class)
-  (:use [clojure.pprint]
-        [rn-navigation-generator.node]
-        [rn-navigation-generator.stringifiers]
-        [rn-navigation-generator.file-writers]))
+  (:require [rn-navigation-generator.node :as node]
+            [rn-navigation-generator.stringifiers :as stringifiers]
+            [rn-navigation-generator.file-writers :as file-writers]
+            [rn-navigation-generator.templating-engine :as templater]))
 
-; ----------- ;
-; Sample Data
-; ----------- ;
+(defn gen-page-files [route-def]
+  (let [page-data-list (->> route-def
+                            node/pages
+                            (map #(hash-map :parsed-page (templater/parse-page %) :page-name (:page-name %))))]
+    (doseq [{:keys [page-name parsed-page]} page-data-list]
+      (file-writers/write-page! page-name parsed-page))))
 
-(def login-page (->Page "LoginPage" "BaseLayout"))
-(def register-page (->Page "RegisterPage" "BaseLayout"))
-(def privacy-policy-page (->Page "PrivacyPolicy" "BaseLayout"))
-
-(def legal-stack
-  (->Stack "LegalStack" [privacy-policy-page]))
-
-(def sample-stack
-  (->Stack "LoginStack" [login-page
-                         register-page
-                         legal-stack]))
-
-(def sample-route-def
-  [(->Stack "RootStack"
-            [(->Page "HomePage" "BaseLayout")
-             (->Page "SettingsPage" "BaseLayout")
-             sample-stack])])
-
-; ----------- ;
+(defn gen-root-navigator-file [route-def]
+  (->> route-def
+       node/flatten-nodes
+       stringifiers/flattened-nodes->root-navigator-file
+       file-writers/write-root-navigator!))
 
 (defn -main [& args]
-  (->> sample-route-def
-       flatten-nodes
-       flattened-nodes->root-navigator-file
-       write-root-navigator!))
+  (println "do something..."))

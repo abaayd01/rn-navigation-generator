@@ -4,8 +4,6 @@
 
 (defrecord Stack [stack-name children])
 
-(defn stack? [x] (= Stack (type x)))
-
 (defprotocol Node (route-name [node]))
 
 (extend-protocol Node
@@ -15,9 +13,11 @@
   Stack
   (route-name [node] (:stack-name node)))
 
-(defn apply-stack-nodes [nodes node-op]
-  "Apply's some fn node-op to each stack node recursively in nodes."
+(defn- stack? [x] (= Stack (type x)))
+(defn- page? [x] (= Page (type x)))
 
+(defn- apply-stack-nodes [nodes node-op]
+  "Apply's some fn node-op to each stack node recursively in nodes."
   (->> nodes
        (doseq [node nodes]
          (when (stack? node)
@@ -25,11 +25,35 @@
              (node-op node)
              (apply-stack-nodes (:children node) node-op))))))
 
-(defn push-stack-node! [a stack]
-  (swap! a #(conj % stack)))
-
+;; Public
 (defn flatten-nodes [nodes]
-  (let [result (atom '())]
-    (apply-stack-nodes nodes (partial push-stack-node! result))
-    @result))
+  (letfn [(push-stack-node! [a stack] (swap! a #(conj % stack)))]
+    (let [result (atom '())]
+      (apply-stack-nodes nodes (partial push-stack-node! result))
+      @result)))
 
+(defn pages [nodes]
+  (let [flattened-nodes (flatten-nodes nodes)]
+    (->> flattened-nodes
+         (map :children)
+         flatten
+         (filter #(page? %)))))
+
+;; Sample Data
+(def login-page (->Page "LoginPage" "BaseLayout"))
+(def register-page (->Page "RegisterPage" "BaseLayout"))
+(def privacy-policy-page (->Page "PrivacyPolicy" "BaseLayout"))
+
+(def legal-stack
+  (->Stack "LegalStack" [privacy-policy-page]))
+
+(def sample-stack
+  (->Stack "LoginStack" [login-page
+                         register-page
+                         legal-stack]))
+
+(def sample-route-def
+  [(->Stack "RootStack"
+            [(->Page "HomePage" "BaseLayout")
+             (->Page "SettingsPage" "BaseLayout")
+             sample-stack])])
