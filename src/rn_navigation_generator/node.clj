@@ -2,7 +2,7 @@
 
 (defrecord Page [page-name layout])
 
-(defrecord Stack [stack-name children])
+(defrecord Stack [stack-name children config])
 
 (defprotocol Node (route-name [node]))
 
@@ -16,8 +16,12 @@
 (defn- stack? [x] (= Stack (type x)))
 (defn- page? [x] (= Page (type x)))
 
+(defn modal-stack? [s]
+  (let [{{:keys [modal]} :config} s]
+    (= true modal)))
+
 (defn- apply-stack-nodes [nodes node-op]
-  "Apply's some fn node-op to each stack node recursively in nodes."
+  "Apply some fn node-op to each stack node recursively in nodes."
   (->> nodes
        (doseq [node nodes]
          (when (stack? node)
@@ -26,34 +30,45 @@
              (apply-stack-nodes (:children node) node-op))))))
 
 ;; Public
+(defn- push-stack-node! [a stack] (swap! a #(conj % stack)))
+
 (defn flatten-nodes [nodes]
-  (letfn [(push-stack-node! [a stack] (swap! a #(conj % stack)))]
-    (let [result (atom '())]
-      (apply-stack-nodes nodes (partial push-stack-node! result))
-      @result)))
+  (let [result (atom '())]
+    (apply-stack-nodes nodes (partial push-stack-node! result))
+    @result))
+
+(defn stacks [nodes]
+  (->> nodes
+       flatten-nodes))
 
 (defn pages [nodes]
-  (let [flattened-nodes (flatten-nodes nodes)]
-    (->> flattened-nodes
-         (map :children)
-         flatten
-         (filter #(page? %)))))
+  (->> nodes
+       flatten-nodes
+       (map :children)
+       flatten
+       (filter #(page? %))))
 
 ;; Sample Data
+(def privacy-policy-page (->Page "PrivacyPolicy" "BaseLayout"))
+(def legal-stack
+  (map->Stack {:stack-name "LegalStack"
+               :children   [privacy-policy-page]}))
+
 (def login-page (->Page "LoginPage" "BaseLayout"))
 (def register-page (->Page "RegisterPage" "BaseLayout"))
-(def privacy-policy-page (->Page "PrivacyPolicy" "BaseLayout"))
+(def login-stack
+  (map->Stack {:stack-name "LoginStack"
+               :children   [login-page
+                            register-page
+                            legal-stack]
+               :config     {:modal true}}))
 
-(def legal-stack
-  (->Stack "LegalStack" [privacy-policy-page]))
+(def home-page (->Page "HomePage" "BaseLayout"))
+(def settings-page (->Page "SettingsPage" "BaseLayout"))
+(def root-stack
+  (map->Stack {:stack-name "RootStack"
+               :children   [home-page
+                            settings-page
+                            login-stack]}))
 
-(def sample-stack
-  (->Stack "LoginStack" [login-page
-                         register-page
-                         legal-stack]))
-
-(def sample-route-def
-  [(->Stack "RootStack"
-            [(->Page "HomePage" "BaseLayout")
-             (->Page "SettingsPage" "BaseLayout")
-             sample-stack])])
+(def sample-route-def (list root-stack))

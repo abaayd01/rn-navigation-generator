@@ -3,7 +3,7 @@
   (:require [rn-navigation-generator.node :as node]
             [rn-navigation-generator.stringifiers :as stringifiers]
             [rn-navigation-generator.file-writers :as file-writers]
-            [rn-navigation-generator.templating-engine :as templater]))
+            [rn-navigation-generator.templater :as templater]))
 
 (defn gen-page-files [route-def]
   (let [page-data-list (->> route-def
@@ -14,9 +14,12 @@
 
 (defn gen-root-navigator-file [route-def]
   (->> route-def
-       node/flatten-nodes
-       stringifiers/flattened-nodes->root-navigator-file
+       node/stacks
+       (map stringifiers/stack->stack-navigator)
+       stringifiers/stack-navigators->root-navigator-file
        file-writers/write-root-navigator!))
 
+(gen-root-navigator-file node/sample-route-def)
 (defn -main [& args]
   (println "do something..."))
+
