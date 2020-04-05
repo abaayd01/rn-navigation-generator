@@ -1,6 +1,7 @@
 (ns rn-navigation-generator.stringifiers
   (:require [rn-navigation-generator.templater :as templater]
-            [rn-navigation-generator.node :refer :all]))
+            [rn-navigation-generator.node :refer :all]
+            [rn-navigation-generator.node :as node]))
 
 (defn- stack->route-config [stack]
   (->> (:children stack)
@@ -32,5 +33,11 @@
          (reduce str)
          (format "%s\n%s" page-imports))))
 
+(defn page->buttons [page]
+  (->> (:links page)
+       (map #(hash-map :route-name %))
+       (map templater/parse-button)
+       (reduce str)))
+
 (defn page->page-file [page]
-  (templater/parse-page page))
+  (templater/parse-page (assoc page :buttons (page->buttons page))))

@@ -6,6 +6,7 @@
 (def rgx #"(\$\$(.+?)\$\$)")
 (def page-template (slurp "./resources/templates/page-template.js"))
 (def stack-navigator-template (slurp "./resources/templates/create-stack-navigator-template.js"))
+(def button-template (slurp "./resources/templates/button-template.js"))
 
 (defn get-other-chunks [template] (str/split template rgx))
 
@@ -26,6 +27,8 @@
          (reduce str))))
 
 (defn parse-page [page] (assemble page-template page))
+
+(defn parse-button [m] (assemble button-template m))
 
 (defn stack->stack-navigator [stack] (assemble stack-navigator-template stack))
 

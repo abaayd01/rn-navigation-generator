@@ -1,12 +1,13 @@
 import React from 'react';
+import {View, Text, Button} from 'react-native';
 import PropTypes from 'prop-types';
 import $$layout$$ from './layouts/$$layout$$';
-import {View} from 'react-native';
 
 const $$page-name$$ = props => {
     return (
         <$$layout$$>
             <Text>$$page-name$$</Text>
+            $$buttons$$
         </$$layout$$>
     );
 };

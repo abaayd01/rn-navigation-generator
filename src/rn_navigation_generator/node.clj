@@ -1,6 +1,6 @@
 (ns rn-navigation-generator.node)
 
-(defrecord Page [page-name layout])
+(defrecord Page [page-name layout links])
 
 (defrecord Stack [stack-name children config])
 
@@ -48,13 +48,24 @@
        (filter #(page? %))))
 
 ;; Sample Data
-(def privacy-policy-page (->Page "PrivacyPolicy" "BaseLayout"))
+(def privacy-policy-page
+  (map->Page {:page-name "PrivacyPolicy"
+              :layout    "BaseLayout"}))
+
 (def legal-stack
   (map->Stack {:stack-name "LegalStack"
                :children   [privacy-policy-page]}))
 
-(def login-page (->Page "LoginPage" "BaseLayout"))
-(def register-page (->Page "RegisterPage" "BaseLayout"))
+(def register-page
+  (map->Page {:page-name "RegisterPage"
+              :layout    "BaseLayout"}))
+
+(def login-page
+  (map->Page {:page-name "LoginPage"
+              :layout    "BaseLayout"
+              :links     ["RegisterPage"
+                          "PrivacyPolicy"]}))
+
 (def login-stack
   (map->Stack {:stack-name "LoginStack"
                :children   [login-page
@@ -62,8 +73,14 @@
                             legal-stack]
                :config     {:modal true}}))
 
-(def home-page (->Page "HomePage" "BaseLayout"))
-(def settings-page (->Page "SettingsPage" "BaseLayout"))
+(def settings-page
+  (map->Page {:page-name "SettingsPage"
+              :layout    "BaseLayout"}))
+
+(def home-page
+  (map->Page {:page-name "HomePage"
+              :layout    "BaseLayout"}))
+
 (def root-stack
   (map->Stack {:stack-name "RootStack"
                :children   [home-page
