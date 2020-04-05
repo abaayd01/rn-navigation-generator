@@ -23,6 +23,16 @@
          (stringifiers/stack-navigators->root-navigator-file pages)
          file-writers/write-root-navigator!)))
 
+(defn gen-routes-file [route-def]
+  (let [stacks (node/stacks route-def)]
+    (->> stacks
+         (map node/stack->route-names)
+         flatten
+         distinct
+         stringifiers/route-names->routes-file
+         file-writers/write-routes-file!)))
+
+(gen-routes-file node/sample-route-def)
 (gen-page-files node/sample-route-def)
 (gen-root-navigator-file node/sample-route-def)
 

@@ -41,3 +41,19 @@
 
 (defn page->page-file [page]
   (templater/parse-page (assoc page :buttons (page->buttons page))))
+
+(def sample-route-names
+  '("LegalStack" "PrivacyPolicy" "LoginStack" "LoginPage" "RegisterPage" "RootStack" "HomePage" "SettingsPage"))
+
+(defn- route-name->route-name-def [route-name]
+  (format "%1$s: '%1$s',\n" route-name))
+
+(route-name->route-name-def (first sample-route-names))
+
+(defn route-names->routes-file [route-names]
+  (->> route-names
+       (map route-name->route-name-def)
+       (reduce str)
+       (#(templater/parse-routes-file {:routes %}))))
+
+(route-names->routes-file sample-route-names)

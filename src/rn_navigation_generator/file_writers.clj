@@ -12,3 +12,5 @@
 
 (defn write-page! [page-name parsed-page]
   (write-file! (format "./gen/pages/%s.js" page-name) parsed-page))
+
+(def write-routes-file! (partial write-file! "./gen/routes.js"))

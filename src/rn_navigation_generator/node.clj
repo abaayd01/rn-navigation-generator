@@ -47,6 +47,10 @@
        flatten
        (filter #(page? %))))
 
+(defn stack->route-names [stack]
+  (concat [(:stack-name stack)]
+          (map route-name (:children stack))))
+
 ;; Sample Data
 (def privacy-policy-page
   (map->Page {:page-name "PrivacyPolicy"

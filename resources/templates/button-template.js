@@ -1,3 +1,3 @@
-<Button onPress={() => props.navigation.navigate($$route-name$$)}>
+<Button onPress={() => props.navigation.navigate(Routes.$$route-name$$)}>
     $$route-name$$
 </Button>
