@@ -29,14 +29,13 @@
              (node-op node)
              (apply-stack-nodes (:children node) node-op))))))
 
-;; Public
 (defn- push-stack-node! [a stack] (swap! a #(conj % stack)))
-
-(defn flatten-nodes [nodes]
+(defn- flatten-nodes [nodes]
   (let [result (atom '())]
     (apply-stack-nodes nodes (partial push-stack-node! result))
     @result))
 
+;; Public
 (defn stacks [nodes]
   (->> nodes
        flatten-nodes))
