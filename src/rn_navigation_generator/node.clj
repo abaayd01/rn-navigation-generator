@@ -16,10 +16,6 @@
 (defn- stack? [x] (= Stack (type x)))
 (defn- page? [x] (= Page (type x)))
 
-(defn modal-stack? [s]
-  (let [{{:keys [modal]} :config} s]
-    (= true modal)))
-
 (defn- apply-stack-nodes [nodes node-op]
   "Apply some fn node-op to each stack node recursively in nodes."
   (->> nodes
@@ -30,6 +26,7 @@
              (apply-stack-nodes (:children node) node-op))))))
 
 (defn- push-stack-node! [a stack] (swap! a #(conj % stack)))
+
 (defn- flatten-nodes [nodes]
   (let [result (atom '())]
     (apply-stack-nodes nodes (partial push-stack-node! result))
@@ -51,6 +48,11 @@
   (concat [(:stack-name stack)]
           (map route-name (:children stack))))
 
+(defn route-names [nodes]
+  (->> nodes
+       stacks
+       (mapcat stack->route-names)))
+
 ;; Sample Data
 (def privacy-policy-page
   (map->Page {:page-name "PrivacyPolicy"
@@ -67,8 +69,8 @@
 (def login-page
   (map->Page {:page-name "LoginPage"
               :layout    "BaseLayout"
-              :links     ["RegisterPage"
-                          "PrivacyPolicy"]}))
+              :links     ["PrivacyPolicy"
+                          "RegisterPage"]}))
 
 (def login-stack
   (map->Stack {:stack-name "LoginStack"

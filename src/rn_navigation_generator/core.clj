@@ -5,32 +5,20 @@
             [rn-navigation-generator.file-writers :as file-writers]))
 
 (defn gen-page-files [route-def]
-  (let [make-page-data-map (fn [page]
-                             (hash-map
-                               :page-name (:page-name page)
-                               :parsed-page (stringifiers/page->page-file page)))
-        page-data-map-coll (->> route-def
-                            node/pages
-                            (map make-page-data-map))]
-    (doseq [{:keys [page-name parsed-page]} page-data-map-coll]
-      (file-writers/write-page! page-name parsed-page))))
+  (let [pages (node/pages route-def)]
+    (doseq [page pages]
+      (let [page-content (stringifiers/page->page-content page)]
+        (file-writers/write-page! (:page-name page) page-content)))))
 
 (defn gen-root-navigator-file [route-def]
-  (let [stacks (node/stacks route-def)
-        pages (node/pages route-def)]
-    (->> stacks
-         (map stringifiers/stack->stack-navigator)
-         (stringifiers/stack-navigators->root-navigator-file pages)
-         file-writers/write-root-navigator!)))
+  (->> route-def
+       stringifiers/route-def->root-navigator-content
+       file-writers/write-root-navigator!))
 
 (defn gen-routes-file [route-def]
-  (let [stacks (node/stacks route-def)]
-    (->> stacks
-         (map node/stack->route-names)
-         flatten
-         distinct
-         stringifiers/route-names->routes-file
-         file-writers/write-routes-file!)))
+  (->> route-def
+       stringifiers/route-def->routes-content
+       file-writers/write-routes-file!))
 
 (gen-routes-file node/sample-route-def)
 (gen-page-files node/sample-route-def)

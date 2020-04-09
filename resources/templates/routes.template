@@ -1,0 +1,7 @@
+const routes = {
+{% for route-name in route-names %}
+{{route-name}}: '{{route-name}}',
+{% endfor %}
+};
+
+export default routes;
