@@ -1,8 +1,8 @@
 (ns rn-navigation-generator.node)
 
-(defrecord Page [page-name layout links])
+(defrecord Page [id page-name layout links])
 
-(defrecord Stack [stack-name children config])
+(defrecord Stack [id stack-name children config])
 
 (defprotocol Node (route-name [node]))
 
