@@ -1,6 +1,5 @@
-(ns rn-navigation-generator.sandbox
-  (:require [clojure.xml :as xml]
-            [rn-navigation-generator.node :as node]))
+(ns rn-navigation-generator.adapters.draw-io
+  (:require [clojure.xml :as xml]))
 
 (def xml-data (xml/parse "resources/sample_file.xml"))
 
@@ -59,16 +58,6 @@
   (->> graph
        (map (fn [vertex] (assoc-adjacent-vertices graph vertex)))))
 
-(defn xml-data->nav-graph [xml-data] (dereference-vertices (make-graph xml-data)))
-
-(defn route-names [nav-graph]
-  (->> nav-graph
-       (map vertex-label)))
-
-(defn stacks [nav-graph]
-  (->> nav-graph
-       (filter stack?)))
-
-(defn pages [nav-graph]
-  (->> nav-graph
-       (filter page?)))
+;; TODO: this needs to also map the draw_io data structure to internal entities
+(defn make-nav-graph [xml-data]
+  (dereference-vertices (make-graph xml-data)))
