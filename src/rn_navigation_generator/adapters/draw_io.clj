@@ -1,5 +1,5 @@
 (ns rn-navigation-generator.adapters.draw-io
-  (:require [clojure.xml :as xml]))
+  (:require [clojure.data.xml :as xml]))
 
 (defn cell? [m] (or (= (:tag m) :mxCell)
                     (= (:tag m) :object)))
@@ -63,7 +63,8 @@
    :adjacent-nodes (map vertex->node adjacent-vertices)})
 
 (defn make-nav-graph [filename]
-  (->> (xml/parse filename)
+  (->> (clojure.java.io/reader filename)
+       xml/parse
        make-graph
        dereference-vertices
        (map vertex->node)))
