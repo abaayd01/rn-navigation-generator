@@ -1,0 +1,14 @@
+;; shadow-cljs configuration
+{:source-paths
+        ["src"]
+
+ :dependencies
+        [[funcool/tubax "0.2.0"]]
+
+ :nrepl {:port 9000}
+
+ :builds
+        {:app
+         {:target    :node-script
+          :output-to "out/rn-nav-gen"
+          :main      rn-navigation-generator.core/-main}}}
