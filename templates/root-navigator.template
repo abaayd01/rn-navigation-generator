@@ -1,0 +1,15 @@
+{{#each stacks}}
+{{#each route-names}}
+import {{this}} from "../pages/{{this}}";
+{{/each}}
+{{/each}}
+
+{{#each stacks}}
+const {{{stack-name}}} = createStackNavigator(
+    {
+        {{#each route-names}}
+        {{this}},
+        {{/each}}
+    },
+);
+{{/each}}

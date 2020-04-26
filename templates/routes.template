@@ -1,0 +1,7 @@
+const routes = {
+    {{#each route-names}}
+    {{this}}: "{{this}}",
+    {{/each}}
+};
+
+export default routes;

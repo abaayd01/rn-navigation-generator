@@ -8,11 +8,11 @@ const {{page-name}} = props => {
     return (
         <{{layout}}>
             <Text>{{page-name}}</Text>
-            {% for route-name in route-names %}
-            <Button onPress={() => props.navigation.navigate(Routes.{{route-name}})}>
-                {{route-name}}
+            {{#each route-names}}
+            <Button onPress={() => props.navigation.navigate(Routes.{{this}})}>
+                {{this}}
             </Button>
-            {% endfor %}
+            {{/each}}
         </{{layout}}>
     );
 };
