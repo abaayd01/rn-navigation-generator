@@ -1,6 +1,6 @@
 {{#each stacks}}
 {{#each route-names}}
-import {{this}} from "../pages/{{this}}";
+import {{this}} from '../pages/{{this}}';
 {{/each}}
 {{/each}}
 

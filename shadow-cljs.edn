@@ -1,6 +1,7 @@
 ;; shadow-cljs configuration
 {:source-paths
-        ["src"]
+        ["src"
+         "src/templates"]
 
  :dependencies
         [[funcool/tubax "0.2.0"]]
@@ -11,4 +12,6 @@
         {:app
          {:target    :node-script
           :output-to "out/rn-nav-gen"
-          :main      rn-navigation-generator.core/-main}}}
+          :main      rn-navigation-generator.core/-main
+          :build-hooks
+                     [(rn-navigation-generator.utils/hook)]}}}

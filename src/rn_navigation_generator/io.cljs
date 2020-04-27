@@ -6,7 +6,7 @@
   (. fs readFileSync filename "utf8"))
 
 (defn read-template [template-name]
-  (read-file (str "./templates/" template-name ".template")))
+  (read-file (str "src/templates/" template-name ".template")))
 
 (defn- path-exists? [path] (. fs existsSync path))
 
